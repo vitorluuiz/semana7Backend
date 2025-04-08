@@ -1,0 +1,50 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "API de Teste",
+        "description": "",
+        "version": "1.0"
+    },
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/Login": {
+            "post": {
+                "x-swagger-router-controller": "login",
+                "operationId": "index",
+                "tags": [
+                    "/Login"
+                ],
+                "description": "Serve para Logar na aplicação",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "formData",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "senha",
+                        "in": "formData",
+                        "type": "string",
+                        "required": "true"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/produtos": {
+            "get": {
+                "x-swagger-router-controller": "produtos",
+                "operationId": "impossible",
+                "tags": [
+                    "/produtos"
+                ],
+                "description": "Lista os Produtos",
+                "parameters": [],
+                "responses": {}
+            }
+        }
+    }
+}
