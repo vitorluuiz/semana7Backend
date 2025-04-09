@@ -10,15 +10,19 @@ const port = 3000
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/', (req, res) => {
-  let rows = [];
-  fs.createReadStream("./produtos.csv")
-    .pipe(parse({ delimiter: "," }))
-    .on("data", function (row) {
-      rows.push(row);
+  fs.readFile("./produtos.csv", (err, data) => {
+    if (err) {
+      res.status(500).send("Error reading file")
+      return
+    }
+    parse(data, { columns: true, trim: true }, (err, records) => {
+      if (err) {
+        res.status(500).send("Error parsing file")
+        return
+      }
+      res.send(records)
     })
-  setTimeout(() => {
-    res.send(rows)
-  }, 2000)
+  })
 })
 
 app.listen(port, () => {
