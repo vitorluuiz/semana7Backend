@@ -6,8 +6,6 @@ const swaggerDocument = require('./swagger.json');
 const { parse } = require("csv-parse");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
-const {authenticateToken, authorizeRole} = require("./auth")
-
 const PRODUTOS_FILE_PATH = "./csv/produtos.csv"
 const USUARIOS_FILE_PATH = "./csv/usuarios.csv"
 
@@ -22,6 +20,35 @@ const usuarios = [
   { id: 1, nome: 'vitor', senha: 'senha123', role: 'user' },
   { id: 2, nome: 'admin', senha: 'admin123', role: 'admin' }
 ];
+
+const jwt = require("jsonwebtoken");
+
+const SECRET_KEY = "mysecretkey";
+
+// Função para gerar token JWT
+function generateToken(user) {
+    return jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+}
+
+function authenticateToken(req, res, next) {
+    const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+}
+
+function authorizeRole(role) {
+    return (req, res, next) => {
+        if (req.user.role !== role) {
+            return res.status(403).send('Forbidden');
+        }
+        next();
+    };
+}
 
 app.post('/login', (req, res) => {
   const { nome, senha } = req.body;
